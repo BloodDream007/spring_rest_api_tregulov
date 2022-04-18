@@ -1,17 +1,15 @@
 package rest.comminication;
 
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import rest.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import rest.model.User;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class Communication {
@@ -27,7 +25,6 @@ public class Communication {
         this.restTemplate = restTemplate;
     }
 
-
     public void doAllRequests(){
         ResponseEntity<List<User>> responseEntity =
                 restTemplate.exchange(URL, HttpMethod.GET, null,
@@ -36,7 +33,8 @@ public class Communication {
 
         cookies = responseEntity.getHeaders().get("Set-Cookie");
 
-        headers.set("Cookie",cookies.stream().collect(Collectors.joining(";")));
+//        headers.set("Cookie",cookies.stream().collect(Collectors.joining(";")));
+        headers.set("Cookie", String.join(";", cookies)); // the same thing
 
         saveUser();
         updateUser();
@@ -54,7 +52,6 @@ public class Communication {
         HttpEntity<User> entity = new HttpEntity<>(user, headers);
 
         ResponseEntity<String> firstPart = restTemplate.exchange(URL, HttpMethod.POST, entity, String.class);
-        System.out.println("first part = " + firstPart.getBody());
         result = result + firstPart.getBody();
     }
 
